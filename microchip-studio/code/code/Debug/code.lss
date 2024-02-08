@@ -1,0 +1,152 @@
+
+code.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000086  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  000000da  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  000000da  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000010c  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000020  00000000  00000000  00000148  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000005d0  00000000  00000000  00000168  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000536  00000000  00000000  00000738  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000025a  00000000  00000000  00000c6e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000024  00000000  00000000  00000ec8  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000306  00000000  00000000  00000eec  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000048  00000000  00000000  000011f2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000010  00000000  00000000  0000123a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	19 c0       	rjmp	.+50     	; 0x36 <__bad_interrupt>
+   4:	18 c0       	rjmp	.+48     	; 0x36 <__bad_interrupt>
+   6:	17 c0       	rjmp	.+46     	; 0x36 <__bad_interrupt>
+   8:	16 c0       	rjmp	.+44     	; 0x36 <__bad_interrupt>
+   a:	15 c0       	rjmp	.+42     	; 0x36 <__bad_interrupt>
+   c:	14 c0       	rjmp	.+40     	; 0x36 <__bad_interrupt>
+   e:	13 c0       	rjmp	.+38     	; 0x36 <__bad_interrupt>
+  10:	12 c0       	rjmp	.+36     	; 0x36 <__bad_interrupt>
+  12:	11 c0       	rjmp	.+34     	; 0x36 <__bad_interrupt>
+  14:	10 c0       	rjmp	.+32     	; 0x36 <__bad_interrupt>
+  16:	0f c0       	rjmp	.+30     	; 0x36 <__bad_interrupt>
+  18:	0e c0       	rjmp	.+28     	; 0x36 <__bad_interrupt>
+  1a:	0d c0       	rjmp	.+26     	; 0x36 <__bad_interrupt>
+  1c:	0c c0       	rjmp	.+24     	; 0x36 <__bad_interrupt>
+  1e:	0b c0       	rjmp	.+22     	; 0x36 <__bad_interrupt>
+  20:	0a c0       	rjmp	.+20     	; 0x36 <__bad_interrupt>
+  22:	09 c0       	rjmp	.+18     	; 0x36 <__bad_interrupt>
+  24:	08 c0       	rjmp	.+16     	; 0x36 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+  32:	02 d0       	rcall	.+4      	; 0x38 <main>
+  34:	26 c0       	rjmp	.+76     	; 0x82 <_exit>
+
+00000036 <__bad_interrupt>:
+  36:	e4 cf       	rjmp	.-56     	; 0x0 <__vectors>
+
+00000038 <main>:
+	// Make only PB0 as output
+	// DDRB |= 1 << 0;
+	// DDRB  = DDRB | 1 << 0;
+	// DDRB  = 00000000 | 00000001;
+	// DDRB  = 00000001;
+	DDRB |= 1 << 0;
+  38:	87 b3       	in	r24, 0x17	; 23
+  3a:	81 60       	ori	r24, 0x01	; 1
+  3c:	87 bb       	out	0x17, r24	; 23
+	// Make only PC0 and PC1 as output
+	// DDRC |= 1 << 0 | 1 << 1;
+	// DDRC  = DDRC | 1 << 0 | 1 << 1;
+	// DDRC  = 00000000 | 00000001 | 00000010;
+	// DDRC  = 00000011;
+	DDRC |= 1 << 0 | 1 << 1;
+  3e:	84 b3       	in	r24, 0x14	; 20
+  40:	83 60       	ori	r24, 0x03	; 3
+  42:	84 bb       	out	0x14, r24	; 20
+		// Write Logic High only at PB0
+		// PORTB |= 1 << 0;
+		// PORTB  = PORTB | 1 << 0;
+		// PORTB  = 00000000 | 00000001;
+		// PORTB  = 00000001;
+		PORTB |= 1 << 0;
+  44:	88 b3       	in	r24, 0x18	; 24
+  46:	81 60       	ori	r24, 0x01	; 1
+  48:	88 bb       	out	0x18, r24	; 24
+		// PORTC |= 1 << 0 | 1 << 1;
+		// PORTC  = PORTC | 1 << 0 | 1 << 1;
+		// PORTB  = 00000000 | 00000001;
+		// PORTC  = 00000000 | 00000001 | 00000010;
+		// PORTC  = 00000011;
+		PORTC |= 1 << 0 | 1 << 1;
+  4a:	85 b3       	in	r24, 0x15	; 21
+  4c:	83 60       	ori	r24, 0x03	; 3
+  4e:	85 bb       	out	0x15, r24	; 21
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  50:	2f ef       	ldi	r18, 0xFF	; 255
+  52:	84 e3       	ldi	r24, 0x34	; 52
+  54:	9c e0       	ldi	r25, 0x0C	; 12
+  56:	21 50       	subi	r18, 0x01	; 1
+  58:	80 40       	sbci	r24, 0x00	; 0
+  5a:	90 40       	sbci	r25, 0x00	; 0
+  5c:	e1 f7       	brne	.-8      	; 0x56 <__SREG__+0x17>
+  5e:	00 c0       	rjmp	.+0      	; 0x60 <__SREG__+0x21>
+  60:	00 00       	nop
+		// Write Low Logic Only at PB0
+		// PORTB &= ~(1 << 0);
+		// PORTB  = PORTB & ~(00000001);
+		// PORTB  = 00000001 & 111111110;
+		// PORTB  = 00000000;
+		PORTB &= ~(1 << 0);
+  62:	88 b3       	in	r24, 0x18	; 24
+  64:	8e 7f       	andi	r24, 0xFE	; 254
+  66:	88 bb       	out	0x18, r24	; 24
+		// PORTC &= ~(1 << 0 | 1 << 1);
+		// PORTC  = PORTC & ~(00000001 | 00000010);
+		// PORTC  = 00000011 & ~(00000011);
+		// PORTC  = 00000011 & 11111100;
+		// PORTC  = 00000000;
+		PORTC &= ~(1 << 0 | 1 << 1);
+  68:	85 b3       	in	r24, 0x15	; 21
+  6a:	8c 7f       	andi	r24, 0xFC	; 252
+  6c:	85 bb       	out	0x15, r24	; 21
+  6e:	2f ef       	ldi	r18, 0xFF	; 255
+  70:	84 e3       	ldi	r24, 0x34	; 52
+  72:	9c e0       	ldi	r25, 0x0C	; 12
+  74:	21 50       	subi	r18, 0x01	; 1
+  76:	80 40       	sbci	r24, 0x00	; 0
+  78:	90 40       	sbci	r25, 0x00	; 0
+  7a:	e1 f7       	brne	.-8      	; 0x74 <__SREG__+0x35>
+  7c:	00 c0       	rjmp	.+0      	; 0x7e <__SREG__+0x3f>
+  7e:	00 00       	nop
+  80:	e1 cf       	rjmp	.-62     	; 0x44 <__SREG__+0x5>
+
+00000082 <_exit>:
+  82:	f8 94       	cli
+
+00000084 <__stop_program>:
+  84:	ff cf       	rjmp	.-2      	; 0x84 <__stop_program>
